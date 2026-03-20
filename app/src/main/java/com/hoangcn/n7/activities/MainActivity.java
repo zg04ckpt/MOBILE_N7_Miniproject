@@ -146,7 +146,7 @@ public class MainActivity extends AppCompatActivity implements RoomAdapter.OnRoo
     public void onDelete(Room room, int position) {
         new AlertDialog.Builder(this)
             .setTitle("Xác nhận xóa")
-            .setMessage("Bạn có chắc chắn muốn xóa " + room.getName() + "?")
+            .setMessage("Bạn có chắc chắn muốn xóa phòng" + room.getName() + "?")
             .setPositiveButton("Xóa", (dialog, which) -> {
                 rooms.remove(position);
                 search();
