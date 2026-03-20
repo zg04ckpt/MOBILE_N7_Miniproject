@@ -1,9 +1,11 @@
 package com.hoangcn.n7.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,12 +18,27 @@ import com.hoangcn.n7.models.Room;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements RoomAdapter.OnRoomActionListener {
+public class MainActivity extends AppCompatActivity {
 
     private RecyclerView rvRooms;
     private RoomAdapter adapter;
     private List<Room> roomList;
     private FloatingActionButton fabAdd;
+
+    private final ActivityResultLauncher<Intent> addRoomLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                    Room newRoom = (Room) result.getData().getSerializableExtra("NEW_ROOM");
+                    if (newRoom != null) {
+                        roomList.add(newRoom);
+                        adapter.notifyItemInserted(roomList.size() - 1);
+                        rvRooms.scrollToPosition(roomList.size() - 1);
+                        Toast.makeText(this, "Đã thêm phòng mới thành công", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+    );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +50,10 @@ public class MainActivity extends AppCompatActivity implements RoomAdapter.OnRoo
         setupRecyclerView();
 
         fabAdd.setOnClickListener(v -> {
-            // Placeholder for Add functionality
-            Toast.makeText(this, "Thêm phòng mới", Toast.LENGTH_SHORT).show();
+            int nextId = roomList.size() + 1;
+            Intent intent = new Intent(this, AddRoomActivity.class);
+            intent.putExtra("NEXT_ID", nextId);
+            addRoomLauncher.launch(intent);
         });
     }
 
@@ -44,38 +63,15 @@ public class MainActivity extends AppCompatActivity implements RoomAdapter.OnRoo
     }
 
     private void initData() {
-        // Dữ liệu mẫu
         roomList = new ArrayList<>();
-        roomList.add(new Room("1", "Phòng 101", 2500000, false, "", ""));
-        roomList.add(new Room("2", "Phòng 102", 3000000, true, "Nguyễn Văn A", "0987654321"));
-        roomList.add(new Room("3", "Phòng 201", 2800000, false, "", ""));
-        roomList.add(new Room("4", "Phòng 202", 3500000, true, "Trần Thị B", "0123456789"));
+        roomList.add(new Room("1", "Phòng 101", 2500000, false, "", "", null));
+        roomList.add(new Room("2", "Phòng 102", 3000000, true, "Nguyễn Văn A", "0987654321", null));
     }
 
     private void setupRecyclerView() {
-        adapter = new RoomAdapter(this, roomList, this);
+        // Khởi tạo adapter không cần listener (bỏ tính năng xóa/sửa)
+        adapter = new RoomAdapter(this, roomList);
         rvRooms.setLayoutManager(new LinearLayoutManager(this));
         rvRooms.setAdapter(adapter);
-    }
-
-    @Override
-    public void onEdit(Room room, int position) {
-        // Placeholder for Edit functionality
-        Toast.makeText(this, "Sửa: " + room.getName(), Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onDelete(Room room, int position) {
-        new AlertDialog.Builder(this)
-                .setTitle("Xác nhận xóa")
-                .setMessage("Bạn có chắc chắn muốn xóa " + room.getName() + "?")
-                .setPositiveButton("Xóa", (dialog, which) -> {
-                    roomList.remove(position);
-                    adapter.notifyItemRemoved(position);
-                    adapter.notifyItemRangeChanged(position, roomList.size());
-                    Toast.makeText(this, "Đã xóa " + room.getName(), Toast.LENGTH_SHORT).show();
-                })
-                .setNegativeButton("Hủy", null)
-                .show();
     }
 }
