@@ -1,14 +1,14 @@
 package com.hoangcn.n7.adapters;
 
 import android.content.Context;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hoangcn.n7.R;
@@ -22,10 +22,17 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
 
     private Context context;
     private List<Room> roomList;
+    private OnRoomActionListener listener;
 
-    public RoomAdapter(Context context, List<Room> roomList) {
+    public interface OnRoomActionListener {
+        void onEdit(Room room, int position);
+        void onDelete(Room room, int position);
+    }
+
+    public RoomAdapter(Context context, List<Room> roomList, OnRoomActionListener listener) {
         this.context = context;
         this.roomList = roomList;
+        this.listener = listener;
     }
 
     @NonNull
@@ -44,12 +51,6 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
         NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
         holder.tvPrice.setText("Giá: " + currencyFormat.format(room.getPrice()));
 
-        if (room.getImageUrl() != null && !room.getImageUrl().isEmpty()) {
-            holder.ivRoom.setImageURI(Uri.parse(room.getImageUrl()));
-        } else {
-            holder.ivRoom.setImageResource(android.R.drawable.ic_menu_gallery);
-        }
-
         if (room.isRented()) {
             holder.tvStatus.setText("Đã thuê");
             holder.tvStatus.setBackgroundResource(R.drawable.bg_status_rented);
@@ -60,6 +61,9 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
             holder.tvStatus.setBackgroundResource(R.drawable.bg_status_available);
             holder.tvTenant.setVisibility(View.GONE);
         }
+
+        holder.btnEdit.setOnClickListener(v -> listener.onEdit(room, position));
+        holder.btnDelete.setOnClickListener(v -> listener.onDelete(room, position));
     }
 
     @Override
@@ -69,7 +73,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
 
     public static class RoomViewHolder extends RecyclerView.ViewHolder {
         TextView tvRoomName, tvPrice, tvStatus, tvTenant;
-        ImageView ivRoom;
+        ImageButton btnEdit, btnDelete;
 
         public RoomViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -77,7 +81,8 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
             tvPrice = itemView.findViewById(R.id.tvPrice);
             tvStatus = itemView.findViewById(R.id.tvStatus);
             tvTenant = itemView.findViewById(R.id.tvTenant);
-            ivRoom = itemView.findViewById(R.id.ivRoom);
+            btnEdit = itemView.findViewById(R.id.btnEdit);
+            btnDelete = itemView.findViewById(R.id.btnDelete);
         }
     }
 }
