@@ -3,31 +3,30 @@ package com.hoangcn.n7.models;
 import java.io.Serializable;
 
 public class Room implements Serializable {
-    private int id;
+    private String id;
     private String name;
-    private float price;
-    private String status;
-    private String tenant;
-    private String phoneNumber;
-    private String imageUri;
+    private double price;
+    private boolean isRented;
+    private String tenantName;
+    private String tenantPhone;
 
-    public Room() {}
+    public Room() {
+    }
 
-    public Room(int id, String name, float price, String status, String tenant, String phoneNumber, String imageUri) {
+    public Room(String id, String name, double price, boolean isRented, String tenantName, String tenantPhone) {
         this.id = id;
         this.name = name;
         this.price = price;
-        this.status = status;
-        this.tenant = tenant;
-        this.phoneNumber = phoneNumber;
-        this.imageUri = imageUri;
+        this.isRented = isRented;
+        this.tenantName = tenantName;
+        this.tenantPhone = tenantPhone;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -39,43 +38,35 @@ public class Room implements Serializable {
         this.name = name;
     }
 
-    public float getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(float price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 
-    public String getStatus() {
-        return status;
+    public boolean isRented() {
+        return isRented;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setRented(boolean rented) {
+        isRented = rented;
     }
 
-    public String getTenant() {
-        return tenant;
+    public String getTenantName() {
+        return tenantName;
     }
 
-    public void setTenant(String tenant) {
-        this.tenant = tenant;
+    public void setTenantName(String tenantName) {
+        this.tenantName = tenantName;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
+    public String getTenantPhone() {
+        return tenantPhone;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public String getImageUri() {
-        return imageUri;
-    }
-
-    public void setImageUri(String imageUri) {
-        this.imageUri = imageUri;
+    public void setTenantPhone(String tenantPhone) {
+        this.tenantPhone = tenantPhone;
     }
 }

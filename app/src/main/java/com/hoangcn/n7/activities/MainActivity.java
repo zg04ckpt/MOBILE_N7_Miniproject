@@ -3,131 +3,81 @@ package com.hoangcn.n7.activities;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.Spinner;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.hoangcn.n7.R;
-import com.hoangcn.n7.managers.RoomManager;
+import com.hoangcn.n7.adapters.RoomAdapter;
 import com.hoangcn.n7.models.Room;
-import com.hoangcn.n7.utils.RoomValidator;
 
-public class MainActivity extends AppCompatActivity {
-    private EditText edtName, edtPrice, edtTenant, edtPhone;
-    private Spinner spnStatus;
-    private Button btnSave, btnCancel, btnChooseImage;
-    private ImageView imgRoom;
-    private Room currentRoom;
-    private Uri selectedImageUri;
-    private ActivityResultLauncher<Intent> imagePickerLauncher;
-    private RoomManager roomManager;
+import java.util.ArrayList;
+import java.util.List;
+
+public class MainActivity extends AppCompatActivity implements RoomAdapter.OnRoomActionListener {
+
+    private RecyclerView rvRooms;
+    private RoomAdapter adapter;
+    private List<Room> roomList;
+    private FloatingActionButton fabAdd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        roomManager = RoomManager.getInstance();
-        initializeViews();
-        setupImagePicker();
-        loadRoomData();
-        setupListeners();
+        initViews();
+        initData();
+        setupRecyclerView();
+
+        fabAdd.setOnClickListener(v -> {
+            // Placeholder for Add functionality
+            Toast.makeText(this, "Thêm phòng mới", Toast.LENGTH_SHORT).show();
+        });
     }
 
-    private void initializeViews() {
-        edtName = findViewById(R.id.edtName);
-        edtPrice = findViewById(R.id.edtPrice);
-        edtTenant = findViewById(R.id.edtTenant);
-        edtPhone = findViewById(R.id.edtPhone);
-        spnStatus = findViewById(R.id.spnStatus);
-        btnSave = findViewById(R.id.btnSave);
-        btnCancel = findViewById(R.id.btnCancel);
-        btnChooseImage = findViewById(R.id.btnChooseImage);
-        imgRoom = findViewById(R.id.imgRoom);
+    private void initViews() {
+        rvRooms = findViewById(R.id.rvRooms);
+        fabAdd = findViewById(R.id.fabAdd);
     }
 
-    private void setupImagePicker() {
-        imagePickerLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-                        selectedImageUri = result.getData().getData();
-                        if (selectedImageUri != null) {
-                            imgRoom.setImageURI(selectedImageUri);
-                        }
-                    }
-                }
-        );
+    private void initData() {
+        // Dữ liệu mẫu
+        roomList = new ArrayList<>();
+        roomList.add(new Room("1", "Phòng 101", 2500000, false, "", ""));
+        roomList.add(new Room("2", "Phòng 102", 3000000, true, "Nguyễn Văn A", "0987654321"));
+        roomList.add(new Room("3", "Phòng 201", 2800000, false, "", ""));
+        roomList.add(new Room("4", "Phòng 202", 3500000, true, "Trần Thị B", "0123456789"));
     }
 
-    private void loadRoomData() {
-        currentRoom = roomManager.getRoomAt(0);
-        if (currentRoom != null) {
-            edtName.setText(currentRoom.getName());
-            edtPrice.setText(String.valueOf(currentRoom.getPrice()));
-            edtTenant.setText(currentRoom.getTenant());
-            edtPhone.setText(currentRoom.getPhoneNumber());
-            setStatusSpinner(currentRoom.getStatus());
-
-            if (currentRoom.getImageUri() != null) {
-                selectedImageUri = Uri.parse(currentRoom.getImageUri());
-                imgRoom.setImageURI(selectedImageUri);
-            }
-        }
+    private void setupRecyclerView() {
+        adapter = new RoomAdapter(this, roomList, this);
+        rvRooms.setLayoutManager(new LinearLayoutManager(this));
+        rvRooms.setAdapter(adapter);
     }
 
-    private void setStatusSpinner(String status) {
-        for (int i = 0; i < spnStatus.getCount(); i++) {
-            if (spnStatus.getItemAtPosition(i).toString().equals(status)) {
-                spnStatus.setSelection(i);
-                break;
-            }
-        }
+    @Override
+    public void onEdit(Room room, int position) {
+        // Placeholder for Edit functionality
+        Toast.makeText(this, "Sửa: " + room.getName(), Toast.LENGTH_SHORT).show();
     }
 
-    private void setupListeners() {
-        btnChooseImage.setOnClickListener(v -> openGallery());
-        btnSave.setOnClickListener(v -> saveRoom());
-        btnCancel.setOnClickListener(v -> finish());
-    }
-
-    private void openGallery() {
-        Intent intent = new Intent(Intent.ACTION_PICK);
-        intent.setType("image/*");
-        imagePickerLauncher.launch(intent);
-    }
-
-    private void saveRoom() {
-        String name = edtName.getText().toString().trim();
-        String price = edtPrice.getText().toString().trim();
-        String tenant = edtTenant.getText().toString().trim();
-        String phone = edtPhone.getText().toString().trim();
-        String status = spnStatus.getSelectedItem().toString();
-
-        String error = RoomValidator.validateRoom(name, price, status, tenant, phone);
-        if (error != null) {
-            Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        currentRoom.setName(name);
-        currentRoom.setPrice(Float.parseFloat(price));
-        currentRoom.setStatus(status);
-        currentRoom.setTenant(tenant);
-        currentRoom.setPhoneNumber(phone);
-        if (selectedImageUri != null) {
-            currentRoom.setImageUri(selectedImageUri.toString());
-        }
-
-        roomManager.updateRoom(0, currentRoom);
-        Toast.makeText(this, "Cập nhật thành công!", Toast.LENGTH_SHORT).show();
+    @Override
+    public void onDelete(Room room, int position) {
+        new AlertDialog.Builder(this)
+                .setTitle("Xác nhận xóa")
+                .setMessage("Bạn có chắc chắn muốn xóa " + room.getName() + "?")
+                .setPositiveButton("Xóa", (dialog, which) -> {
+                    roomList.remove(position);
+                    adapter.notifyItemRemoved(position);
+                    adapter.notifyItemRangeChanged(position, roomList.size());
+                    Toast.makeText(this, "Đã xóa " + room.getName(), Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
     }
 }
-
-
