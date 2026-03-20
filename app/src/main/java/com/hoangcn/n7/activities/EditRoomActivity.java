@@ -21,7 +21,6 @@ public class EditRoomActivity extends AppCompatActivity {
     private ImageView imgRoom;
     private Room currentRoom;
     private int roomPosition;
-    // store drawable resource id for preview image (matches Room.previewImage)
     private int selectedImageResId = -1;
 
     @Override
