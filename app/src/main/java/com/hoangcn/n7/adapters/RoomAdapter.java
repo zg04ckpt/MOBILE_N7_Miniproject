@@ -4,11 +4,9 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hoangcn.n7.R;
@@ -20,19 +18,22 @@ import java.util.Locale;
 
 public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder> {
 
-    private Context context;
-    private List<Room> roomList;
-    private OnRoomActionListener listener;
-
     public interface OnRoomActionListener {
         void onEdit(Room room, int position);
+
         void onDelete(Room room, int position);
     }
 
-    public RoomAdapter(Context context, List<Room> roomList, OnRoomActionListener listener) {
+    private final Context context;
+    private final List<Room> rooms;
+    private final OnRoomActionListener listener;
+    private final NumberFormat currencyFormat;
+
+    public RoomAdapter(Context context, List<Room> rooms, OnRoomActionListener listener) {
         this.context = context;
-        this.roomList = roomList;
+        this.rooms = rooms;
         this.listener = listener;
+        this.currencyFormat = NumberFormat.getInstance(new Locale("vi", "VN"));
     }
 
     @NonNull
@@ -44,45 +45,47 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull RoomViewHolder holder, int position) {
-        Room room = roomList.get(position);
-
-        holder.tvRoomName.setText(room.getName());
-        
-        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
-        holder.tvPrice.setText("Giá: " + currencyFormat.format(room.getPrice()));
-
-        if (room.isRented()) {
-            holder.tvStatus.setText("Đã thuê");
-            holder.tvStatus.setBackgroundResource(R.drawable.bg_status_rented);
-            holder.tvTenant.setText("Người thuê: " + room.getTenantName() + " (" + room.getTenantPhone() + ")");
-            holder.tvTenant.setVisibility(View.VISIBLE);
-        } else {
-            holder.tvStatus.setText("Còn trống");
-            holder.tvStatus.setBackgroundResource(R.drawable.bg_status_available);
-            holder.tvTenant.setVisibility(View.GONE);
-        }
-
-        holder.btnEdit.setOnClickListener(v -> listener.onEdit(room, position));
-        holder.btnDelete.setOnClickListener(v -> listener.onDelete(room, position));
+        Room room = rooms.get(position);
+        holder.bind(room);
+        holder.itemView.setOnClickListener(v -> listener.onEdit(room, position));
+        holder.itemView.setOnLongClickListener(v -> {
+            listener.onDelete(room, position);
+            return true;
+        });
     }
 
     @Override
     public int getItemCount() {
-        return roomList != null ? roomList.size() : 0;
+        return rooms.size();
     }
 
-    public static class RoomViewHolder extends RecyclerView.ViewHolder {
-        TextView tvRoomName, tvPrice, tvStatus, tvTenant;
-        ImageButton btnEdit, btnDelete;
+    class RoomViewHolder extends RecyclerView.ViewHolder {
+        private final TextView tvName;
+        private final TextView tvPrice;
+        private final TextView tvStatus;
+        private final TextView tvTenant;
 
-        public RoomViewHolder(@NonNull View itemView) {
+        RoomViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvRoomName = itemView.findViewById(R.id.tvRoomName);
-            tvPrice = itemView.findViewById(R.id.tvPrice);
-            tvStatus = itemView.findViewById(R.id.tvStatus);
-            tvTenant = itemView.findViewById(R.id.tvTenant);
-            btnEdit = itemView.findViewById(R.id.btnEdit);
-            btnDelete = itemView.findViewById(R.id.btnDelete);
+            tvName = itemView.findViewById(R.id.tvRoomName);
+            tvPrice = itemView.findViewById(R.id.tvRoomPrice);
+            tvStatus = itemView.findViewById(R.id.tvRoomStatus);
+            tvTenant = itemView.findViewById(R.id.tvRoomTenant);
+        }
+
+        void bind(Room room) {
+            tvName.setText(room.getName());
+            tvPrice.setText(currencyFormat.format(room.getPrice()) + " VND");
+
+            if (room.isRented()) {
+                tvStatus.setText(R.string.status_rented);
+                tvStatus.setTextColor(context.getColor(R.color.status_rented));
+                tvTenant.setText(room.getTenantName() + " - " + room.getTenantPhone());
+            } else {
+                tvStatus.setText(R.string.status_available);
+                tvStatus.setTextColor(context.getColor(R.color.status_available));
+                tvTenant.setText(context.getString(R.string.tenant_empty));
+            }
         }
     }
 }

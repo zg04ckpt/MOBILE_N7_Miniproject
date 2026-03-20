@@ -1,8 +1,19 @@
 <resources>
     <string name="app_name">n7</string>
+    <string name="toolbar_title">Quản Lý Phòng Trọ</string>
+    <string name="hint_search">Tìm theo tên phòng</string>
+    <string name="label_status">Tình trạng:</string>
+    <string name="status_available">Còn trống</string>
+    <string name="status_rented">Đã thuê</string>
+    <string name="status_all">Tất cả</string>
+    <string name="hint_min_price">Giá min</string>
+    <string name="hint_max_price">Giá max</string>
+    <string name="action_reset">Reset</string>
+    <string name="tenant_empty">Chưa có người thuê</string>
 
-    <string-array name="status_array">
-        <item>Còn trống</item>
-        <item>Đã thuê</item>
+    <string-array name="status_filter_options">
+        <item>@string/status_available</item>
+        <item>@string/status_rented</item>
+        <item>@string/status_all</item>
     </string-array>
 </resources>
