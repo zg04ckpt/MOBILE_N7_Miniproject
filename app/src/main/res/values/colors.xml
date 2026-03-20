@@ -16,8 +16,8 @@
 
     <color name="status_available">#4CAF50</color> <!-- Green -->
     <color name="status_rented">#F44336</color>    <!-- Red -->
-    <color name="text_primary">#212121</color>
-    <color name="text_secondary">#757575</color>
-    <color name="background_light">#F5F5F5</color>
+    <color name="text_primary">#000000</color>
+    <color name="text_secondary">#333333</color>
+    <color name="background_light">#FFFFFF</color>
     <color name="card_background">#FFFFFF</color>
 </resources>
