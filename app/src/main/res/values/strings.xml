@@ -8,7 +8,7 @@
     <string name="status_all">Tất cả</string>
     <string name="hint_min_price">Giá min</string>
     <string name="hint_max_price">Giá max</string>
-    <string name="action_reset">Reset</string>
+    <string name="action_reset">Tìm kiếm</string>
     <string name="tenant_empty">Chưa có người thuê</string>
 
     <string name="hint_room_name">Tên phòng</string>

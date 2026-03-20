@@ -22,8 +22,6 @@ public class AddRoomActivity extends AppCompatActivity {
 
     private EditText etName, etPrice, etTenantName, etTenantPhone;
     private Spinner spnStatus;
-    private ImageView ivRoomImage;
-    private ImageButton btnSelectImage;
     private Button btnSave;
     // store selected image as drawable resource id
     private int selectedImageResId = -1;
@@ -42,32 +40,11 @@ public class AddRoomActivity extends AppCompatActivity {
         spnStatus = findViewById(R.id.spnStatus);
         etTenantName = findViewById(R.id.etTenantName);
         etTenantPhone = findViewById(R.id.etTenantPhone);
-        ivRoomImage = findViewById(R.id.ivRoomImage);
-        btnSelectImage = findViewById(R.id.btnSelectImage);
         btnSave = findViewById(R.id.btnSave);
     }
 
     private void setupListeners() {
-        btnSelectImage.setOnClickListener(v -> openDrawableChooser());
         btnSave.setOnClickListener(v -> saveRoom());
-    }
-
-    private void openDrawableChooser() {
-        final String[] names = new String[]{"Placeholder", "Launcher Foreground", "Launcher Background"};
-        final int[] ids = new int[]{
-                R.drawable.image_placeholder_bg,
-                R.drawable.ic_launcher_foreground,
-                R.drawable.ic_launcher_background
-        };
-
-        new AlertDialog.Builder(this)
-                .setTitle("Chọn ảnh")
-                .setItems(names, (dialog, which) -> {
-                    selectedImageResId = ids[which];
-                    ivRoomImage.setImageResource(selectedImageResId);
-                })
-                .setNegativeButton("Hủy", null)
-                .show();
     }
 
     private void saveRoom() {
@@ -80,14 +57,10 @@ public class AddRoomActivity extends AppCompatActivity {
 
         if (validateData(name, priceStr, isRented, tenantName, tenantPhone)) {
             double price = Double.parseDouble(priceStr);
-            String id = String.valueOf(nextId);
-            Room newRoom = new Room(id, name, price, status, tenantName, tenantPhone, selectedImageResId);
-
-            // add to RoomManager so the singleton holds data in-memory
-            RoomManager.getInstance().getAllRooms().add(newRoom);
+            Room newRoom = new Room(0, name, price, status, tenantName, tenantPhone);
 
             Intent resultIntent = new Intent();
-            resultIntent.putExtra("NEW_ROOM", newRoom);
+            resultIntent.putExtra("room", newRoom);
             setResult(RESULT_OK, resultIntent);
             finish();
         }

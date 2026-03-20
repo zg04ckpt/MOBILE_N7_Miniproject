@@ -11,18 +11,15 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.hoangcn.n7.R;
-import com.hoangcn.n7.managers.RoomManager;
 import com.hoangcn.n7.models.Room;
 import com.hoangcn.n7.utils.RoomValidator;
 
 public class EditRoomActivity extends AppCompatActivity {
     private EditText edtName, edtPrice, edtTenant, edtPhone;
     private Spinner spnStatus;
-    private Button btnSave, btnCancel, btnChooseImage;
-    private ImageView imgRoom;
+    private Button btnSave, btnCancel;
     private Room currentRoom;
     private int roomPosition;
-    private int selectedImageResId = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +27,6 @@ public class EditRoomActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit_room);
 
         initializeViews();
-        setupImageChooser();
         loadRoomData();
         setupListeners();
     }
@@ -43,13 +39,6 @@ public class EditRoomActivity extends AppCompatActivity {
         spnStatus = findViewById(R.id.spnStatus);
         btnSave = findViewById(R.id.btnSave);
         btnCancel = findViewById(R.id.btnCancel);
-        btnChooseImage = findViewById(R.id.btnChooseImage);
-        imgRoom = findViewById(R.id.imgRoom);
-    }
-
-    private void setupImageChooser() {
-        // No-op for now; we show a dialog when user taps "Choose Image".
-        // Kept as a separate method for clarity and future extension.
     }
 
     private void loadRoomData() {
@@ -62,12 +51,6 @@ public class EditRoomActivity extends AppCompatActivity {
             edtTenant.setText(currentRoom.getTenantName());
             edtPhone.setText(currentRoom.getTenantPhone());
             setStatusSpinner(currentRoom.getStatus());
-
-            if (currentRoom.getPreviewImage() != -1) {
-                // previewImage is stored as a drawable resource id
-                selectedImageResId = currentRoom.getPreviewImage();
-                imgRoom.setImageResource(selectedImageResId);
-            }
         }
     }
 
@@ -81,28 +64,8 @@ public class EditRoomActivity extends AppCompatActivity {
     }
 
     private void setupListeners() {
-        btnChooseImage.setOnClickListener(v -> openGallery());
         btnSave.setOnClickListener(v -> saveRoom());
         btnCancel.setOnClickListener(v -> finish());
-    }
-
-    private void openGallery() {
-        // Show a simple dialog allowing the user to pick one of the app's drawables.
-        final String[] names = new String[]{"Placeholder", "Launcher Foreground", "Launcher Background"};
-        final int[] ids = new int[]{
-                R.drawable.image_placeholder_bg,
-                R.drawable.ic_launcher_foreground,
-                R.drawable.ic_launcher_background
-        };
-
-        new AlertDialog.Builder(this)
-                .setTitle("Choose image")
-                .setItems(names, (dialog, which) -> {
-                    selectedImageResId = ids[which];
-                    imgRoom.setImageResource(selectedImageResId);
-                })
-                .setNegativeButton("Cancel", null)
-                .show();
     }
 
     private void saveRoom() {
@@ -121,19 +84,10 @@ public class EditRoomActivity extends AppCompatActivity {
         currentRoom.setName(name);
         currentRoom.setPrice(Float.parseFloat(price));
         currentRoom.setStatus(status);
-        // Use the Room setters that exist in the model
         currentRoom.setTenantName(tenant);
         currentRoom.setTenantPhone(phone);
-        if (selectedImageResId != -1) {
-            currentRoom.setPreviewImage(selectedImageResId);
-        }
 
-        // update singleton master list if possible
-        if (roomPosition >= 0) {
-            RoomManager.getInstance().updateRoom(roomPosition, currentRoom);
-        }
-
-        getIntent().putExtra("updatedRoom", currentRoom);
+        getIntent().putExtra("room", currentRoom);
         getIntent().putExtra("position", roomPosition);
         setResult(RESULT_OK, getIntent());
         finish();

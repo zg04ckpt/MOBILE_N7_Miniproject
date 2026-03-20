@@ -54,6 +54,23 @@ public class MainActivity extends AppCompatActivity implements RoomAdapter.OnRoo
         FloatingActionButton fabAdd = findViewById(R.id.fabAdd);
 
         etSearch = findViewById(R.id.etSearch);
+        etSearch.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                search();
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+        });
 
         fabAdd.setOnClickListener(v -> {
             Intent intent = new Intent(this, AddRoomActivity.class);
@@ -71,6 +88,21 @@ public class MainActivity extends AppCompatActivity implements RoomAdapter.OnRoo
         adapter = new RoomAdapter(this, filterRooms, this);
         rvRooms.setLayoutManager(new LinearLayoutManager(this));
         rvRooms.setAdapter(adapter);
+    }
+
+    private void search() {
+        String name = etSearch.getText().toString().trim();
+        filterRooms.clear();
+        if (name.isEmpty()) {
+            filterRooms.addAll(rooms);
+        } else {
+            for (Room room : rooms) {
+                if (room.getName().toLowerCase().contains(name.toLowerCase())) {
+                    filterRooms.add(room);
+                }
+            }
+        }
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -97,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements RoomAdapter.OnRoo
         if (newRoom != null) {
             newRoom.setId(rooms.size() + 1);
             rooms.add(newRoom);
-            adapter.notifyDataSetChanged();
+            search();
         }
     }
 
@@ -106,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements RoomAdapter.OnRoo
         int pos = data.getIntExtra("position", -1);
         if (updated != null && pos >= 0 && pos < rooms.size()) {
             rooms.set(pos, updated);
-            adapter.notifyDataSetChanged();
+            search();
         }
     }
 
@@ -117,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements RoomAdapter.OnRoo
             .setMessage("Bạn có chắc chắn muốn xóa " + room.getName() + "?")
             .setPositiveButton("Xóa", (dialog, which) -> {
                 rooms.remove(position);
-                adapter.notifyDataSetChanged();
+                search();
                 Toast.makeText(this, "Đã xóa " + room.getName(), Toast.LENGTH_SHORT).show();
             })
             .setNegativeButton("Hủy", null)

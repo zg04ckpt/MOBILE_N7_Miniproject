@@ -9,16 +9,14 @@ public class Room implements Serializable {
     private String status;
     private String tenantName;
     private String tenantPhone;
-    private int previewImage;
 
-    public Room(int id, String name, double price, String status, String tenantName, String tenantPhone, int previewImage) {
+    public Room(int id, String name, double price, String status, String tenantName, String tenantPhone) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.status = status;
         this.tenantName = tenantName;
         this.tenantPhone = tenantPhone;
-        this.previewImage = previewImage;
     }
 
     public int getId() {
@@ -67,13 +65,5 @@ public class Room implements Serializable {
 
     public void setTenantPhone(String tenantPhone) {
         this.tenantPhone = tenantPhone;
-    }
-
-    public int getPreviewImage() {
-        return previewImage;
-    }
-
-    public void setPreviewImage(int previewImage) {
-        this.previewImage = previewImage;
     }
 }

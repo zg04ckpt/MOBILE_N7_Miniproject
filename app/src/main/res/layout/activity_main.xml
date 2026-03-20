@@ -44,68 +44,6 @@
                     android:textColor="@color/text_primary"
                     android:padding="10dp" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/label_status"
-                        android:textColor="@color/text_primary" />
-
-                    <Spinner
-                        android:id="@+id/spStatus"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_weight="1"
-                        android:entries="@array/status_filter_options" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <EditText
-                        android:id="@+id/etMinPrice"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:background="@android:drawable/edit_text"
-                        android:hint="@string/hint_min_price"
-                        android:inputType="numberDecimal"
-                        android:textColor="@color/text_primary"
-                        android:padding="10dp" />
-
-                    <EditText
-                        android:id="@+id/etMaxPrice"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_weight="1"
-                        android:background="@android:drawable/edit_text"
-                        android:hint="@string/hint_max_price"
-                        android:inputType="numberDecimal"
-                        android:textColor="@color/text_primary"
-                        android:padding="10dp" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnReset"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="@string/action_reset" />
-
-                </LinearLayout>
-
             </LinearLayout>
 
         </LinearLayout>
