@@ -1,26 +1,133 @@
 package com.hoangcn.n7.activities;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Spinner;
+import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.hoangcn.n7.R;
+import com.hoangcn.n7.managers.RoomManager;
+import com.hoangcn.n7.models.Room;
+import com.hoangcn.n7.utils.RoomValidator;
 
 public class MainActivity extends AppCompatActivity {
+    private EditText edtName, edtPrice, edtTenant, edtPhone;
+    private Spinner spnStatus;
+    private Button btnSave, btnCancel, btnChooseImage;
+    private ImageView imgRoom;
+    private Room currentRoom;
+    private Uri selectedImageUri;
+    private ActivityResultLauncher<Intent> imagePickerLauncher;
+    private RoomManager roomManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+
+        roomManager = RoomManager.getInstance();
+        initializeViews();
+        setupImagePicker();
+        loadRoomData();
+        setupListeners();
+    }
+
+    private void initializeViews() {
+        edtName = findViewById(R.id.edtName);
+        edtPrice = findViewById(R.id.edtPrice);
+        edtTenant = findViewById(R.id.edtTenant);
+        edtPhone = findViewById(R.id.edtPhone);
+        spnStatus = findViewById(R.id.spnStatus);
+        btnSave = findViewById(R.id.btnSave);
+        btnCancel = findViewById(R.id.btnCancel);
+        btnChooseImage = findViewById(R.id.btnChooseImage);
+        imgRoom = findViewById(R.id.imgRoom);
+    }
+
+    private void setupImagePicker() {
+        imagePickerLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        selectedImageUri = result.getData().getData();
+                        if (selectedImageUri != null) {
+                            imgRoom.setImageURI(selectedImageUri);
+                        }
+                    }
+                }
+        );
+    }
+
+    private void loadRoomData() {
+        currentRoom = roomManager.getRoomAt(0);
+        if (currentRoom != null) {
+            edtName.setText(currentRoom.getName());
+            edtPrice.setText(String.valueOf(currentRoom.getPrice()));
+            edtTenant.setText(currentRoom.getTenant());
+            edtPhone.setText(currentRoom.getPhoneNumber());
+            setStatusSpinner(currentRoom.getStatus());
+
+            if (currentRoom.getImageUri() != null) {
+                selectedImageUri = Uri.parse(currentRoom.getImageUri());
+                imgRoom.setImageURI(selectedImageUri);
+            }
+        }
+    }
+
+    private void setStatusSpinner(String status) {
+        for (int i = 0; i < spnStatus.getCount(); i++) {
+            if (spnStatus.getItemAtPosition(i).toString().equals(status)) {
+                spnStatus.setSelection(i);
+                break;
+            }
+        }
+    }
+
+    private void setupListeners() {
+        btnChooseImage.setOnClickListener(v -> openGallery());
+        btnSave.setOnClickListener(v -> saveRoom());
+        btnCancel.setOnClickListener(v -> finish());
+    }
+
+    private void openGallery() {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        imagePickerLauncher.launch(intent);
+    }
+
+    private void saveRoom() {
+        String name = edtName.getText().toString().trim();
+        String price = edtPrice.getText().toString().trim();
+        String tenant = edtTenant.getText().toString().trim();
+        String phone = edtPhone.getText().toString().trim();
+        String status = spnStatus.getSelectedItem().toString();
+
+        String error = RoomValidator.validateRoom(name, price, status, tenant, phone);
+        if (error != null) {
+            Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        currentRoom.setName(name);
+        currentRoom.setPrice(Float.parseFloat(price));
+        currentRoom.setStatus(status);
+        currentRoom.setTenant(tenant);
+        currentRoom.setPhoneNumber(phone);
+        if (selectedImageUri != null) {
+            currentRoom.setImageUri(selectedImageUri.toString());
+        }
+
+        roomManager.updateRoom(0, currentRoom);
+        Toast.makeText(this, "Cập nhật thành công!", Toast.LENGTH_SHORT).show();
     }
 }
+
+

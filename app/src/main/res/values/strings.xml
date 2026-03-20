@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">n7</string>
+
+    <string-array name="status_array">
+        <item>Còn trống</item>
+        <item>Đã thuê</item>
+    </string-array>
 </resources>
