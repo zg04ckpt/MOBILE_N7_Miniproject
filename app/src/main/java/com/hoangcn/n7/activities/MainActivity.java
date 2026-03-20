@@ -1,5 +1,7 @@
 package com.hoangcn.n7.activities;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -9,7 +11,8 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,7 +25,7 @@ import com.hoangcn.n7.models.Room;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements RoomAdapter.OnRoomActionListener {
+public class MainActivity extends AppCompatActivity {
 
     private RecyclerView rvRooms;
     private RoomAdapter adapter;
@@ -35,6 +38,21 @@ public class MainActivity extends AppCompatActivity implements RoomAdapter.OnRoo
     private EditText etMaxPrice;
     private View btnReset;
 
+    private final ActivityResultLauncher<Intent> addRoomLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                    Room newRoom = (Room) result.getData().getSerializableExtra("NEW_ROOM");
+                    if (newRoom != null) {
+                        roomList.add(newRoom);
+                        adapter.notifyItemInserted(roomList.size() - 1);
+                        rvRooms.scrollToPosition(roomList.size() - 1);
+                        Toast.makeText(this, "Đã thêm phòng mới thành công", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+    );
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,8 +64,10 @@ public class MainActivity extends AppCompatActivity implements RoomAdapter.OnRoo
         setupFilters();
 
         fabAdd.setOnClickListener(v -> {
-            // Placeholder for Add functionality
-            Toast.makeText(this, "Thêm phòng mới", Toast.LENGTH_SHORT).show();
+            int nextId = roomList.size() + 1;
+            Intent intent = new Intent(this, AddRoomActivity.class);
+            intent.putExtra("NEXT_ID", nextId);
+            addRoomLauncher.launch(intent);
         });
     }
 

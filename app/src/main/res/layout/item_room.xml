@@ -47,4 +47,4 @@
             android:textSize="14sp" />
 
     </LinearLayout>
-</com.google.android.material.card.MaterialCardView>
+</androidx.cardview.widget.CardView>
