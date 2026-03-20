@@ -9,17 +9,19 @@ public class Room implements Serializable {
     private boolean isRented;
     private String tenantName;
     private String tenantPhone;
+    private String imageUrl;
 
     public Room() {
     }
 
-    public Room(String id, String name, double price, boolean isRented, String tenantName, String tenantPhone) {
+    public Room(String id, String name, double price, boolean isRented, String tenantName, String tenantPhone, String imageUrl) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.isRented = isRented;
         this.tenantName = tenantName;
         this.tenantPhone = tenantPhone;
+        this.imageUrl = imageUrl;
     }
 
     public String getId() {
@@ -68,5 +70,13 @@ public class Room implements Serializable {
 
     public void setTenantPhone(String tenantPhone) {
         this.tenantPhone = tenantPhone;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }
