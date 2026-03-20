@@ -27,13 +27,11 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
     private final Context context;
     private final List<Room> rooms;
     private final OnRoomActionListener listener;
-    private final NumberFormat currencyFormat;
 
     public RoomAdapter(Context context, List<Room> rooms, OnRoomActionListener listener) {
         this.context = context;
         this.rooms = rooms;
         this.listener = listener;
-        this.currencyFormat = NumberFormat.getInstance(new Locale("vi", "VN"));
     }
 
     @NonNull
@@ -59,7 +57,8 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
         return rooms.size();
     }
 
-    class RoomViewHolder extends RecyclerView.ViewHolder {
+    // make ViewHolder static to avoid implicit reference to adapter
+    public static class RoomViewHolder extends RecyclerView.ViewHolder {
         private final TextView tvName;
         private final TextView tvPrice;
         private final TextView tvStatus;
@@ -74,17 +73,26 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
         }
 
         void bind(Room room) {
+            Context ctx = itemView.getContext();
+            NumberFormat nf = NumberFormat.getInstance(new Locale("vi", "VN"));
             tvName.setText(room.getName());
-            tvPrice.setText(currencyFormat.format(room.getPrice()) + " VND");
 
-            if (room.isRented()) {
+            // Use string resource for price formatting
+            String priceText = String.format(ctx.getString(R.string.price_format), nf.format(room.getPrice()));
+            tvPrice.setText(priceText);
+
+            // Null-safe status check using equals
+            if (ctx.getString(R.string.status_rented).equals(room.getStatus())) {
                 tvStatus.setText(R.string.status_rented);
-                tvStatus.setTextColor(context.getColor(R.color.status_rented));
-                tvTenant.setText(room.getTenantName() + " - " + room.getTenantPhone());
+                tvStatus.setTextColor(ctx.getColor(R.color.status_rented));
+                String tenantText = String.format(ctx.getString(R.string.tenant_with_phone),
+                        room.getTenantName() == null ? "" : room.getTenantName(),
+                        room.getTenantPhone() == null ? "" : room.getTenantPhone());
+                tvTenant.setText(tenantText);
             } else {
                 tvStatus.setText(R.string.status_available);
-                tvStatus.setTextColor(context.getColor(R.color.status_available));
-                tvTenant.setText(context.getString(R.string.tenant_empty));
+                tvStatus.setTextColor(ctx.getColor(R.color.status_available));
+                tvTenant.setText(ctx.getString(R.string.tenant_empty));
             }
         }
     }

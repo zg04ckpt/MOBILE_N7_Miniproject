@@ -1,44 +1,37 @@
 package com.hoangcn.n7.activities;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.switchmaterial.SwitchMaterial;
-import com.google.android.material.textfield.TextInputEditText;
 import com.hoangcn.n7.R;
 import com.hoangcn.n7.models.Room;
 
 public class AddRoomActivity extends AppCompatActivity {
 
-    private TextInputEditText etName, etPrice, etTenantName, etTenantPhone;
-    private SwitchMaterial cbIsRented;
-    private LinearLayout layoutTenantInfo;
+    private EditText etName, etPrice, etTenantName, etTenantPhone;
+    private Spinner spnStatus;
     private ImageView ivRoomImage;
-    private FloatingActionButton btnSelectImage;
+    private ImageButton btnSelectImage;
     private Button btnSave;
-    private String selectedImageUri = "";
-    private int nextId = 1;
+    // store selected image as drawable resource id
+    private int selectedImageResId = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_room);
-
-        nextId = getIntent().getIntExtra("NEXT_ID", 1);
-
         initViews();
         setupListeners();
     }
@@ -46,8 +39,7 @@ public class AddRoomActivity extends AppCompatActivity {
     private void initViews() {
         etName = findViewById(R.id.etRoomName);
         etPrice = findViewById(R.id.etPrice);
-        cbIsRented = findViewById(R.id.cbIsRented);
-        layoutTenantInfo = findViewById(R.id.layoutTenantInfo);
+        spnStatus = findViewById(R.id.spnStatus);
         etTenantName = findViewById(R.id.etTenantName);
         etTenantPhone = findViewById(R.id.etTenantPhone);
         ivRoomImage = findViewById(R.id.ivRoomImage);
@@ -56,55 +48,55 @@ public class AddRoomActivity extends AppCompatActivity {
     }
 
     private void setupListeners() {
-        cbIsRented.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            layoutTenantInfo.setVisibility(isChecked ? View.VISIBLE : View.GONE);
-        });
-
-        ActivityResultLauncher<Intent> imagePickerLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                        Uri uri = result.getData().getData();
-                        if (uri != null) {
-                            try {
-                                getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                            } catch (Exception e) {
-                                // Ignore if permission already exists or cannot be taken
-                            }
-                            selectedImageUri = uri.toString();
-                            ivRoomImage.setImageURI(uri);
-                        }
-                    }
-                }
-        );
-
-        btnSelectImage.setOnClickListener(v -> {
-            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-            intent.addCategory(Intent.CATEGORY_OPENABLE);
-            intent.setType("image/*");
-            imagePickerLauncher.launch(intent);
-        });
-
+        btnSelectImage.setOnClickListener(v -> openDrawableChooser());
         btnSave.setOnClickListener(v -> saveRoom());
     }
 
+    private void openDrawableChooser() {
+        final String[] names = new String[]{"Placeholder", "Launcher Foreground", "Launcher Background"};
+        final int[] ids = new int[]{
+                R.drawable.image_placeholder_bg,
+                R.drawable.ic_launcher_foreground,
+                R.drawable.ic_launcher_background
+        };
+
+        new AlertDialog.Builder(this)
+                .setTitle("Chọn ảnh")
+                .setItems(names, (dialog, which) -> {
+                    selectedImageResId = ids[which];
+                    ivRoomImage.setImageResource(selectedImageResId);
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
+    }
+
     private void saveRoom() {
-        String name = etName.getText().toString().trim();
-        String priceStr = etPrice.getText().toString().trim();
-        boolean isRented = cbIsRented.isChecked();
-        String tenantName = etTenantName.getText().toString().trim();
-        String tenantPhone = etTenantPhone.getText().toString().trim();
+        String name = getTrimmedText(etName);
+        String priceStr = getTrimmedText(etPrice);
+        String status = spnStatus.getSelectedItem() != null ? spnStatus.getSelectedItem().toString() : "";
+        boolean isRented = status.equals(getString(R.string.status_rented));
+        String tenantName = getTrimmedText(etTenantName);
+        String tenantPhone = getTrimmedText(etTenantPhone);
 
         if (validateData(name, priceStr, isRented, tenantName, tenantPhone)) {
             double price = Double.parseDouble(priceStr);
             String id = String.valueOf(nextId);
-            Room newRoom = new Room(id, name, price, isRented, tenantName, tenantPhone, selectedImageUri);
-            
+            Room newRoom = new Room(id, name, price, status, tenantName, tenantPhone, selectedImageResId);
+
+            // add to RoomManager so the singleton holds data in-memory
+            RoomManager.getInstance().getAllRooms().add(newRoom);
+
             Intent resultIntent = new Intent();
             resultIntent.putExtra("NEW_ROOM", newRoom);
             setResult(RESULT_OK, resultIntent);
             finish();
         }
+    }
+
+    private String getTrimmedText(EditText edit) {
+        if (edit == null) return "";
+        CharSequence cs = edit.getText();
+        return cs == null ? "" : cs.toString().trim();
     }
 
     private boolean validateData(String name, String priceStr, boolean isRented, String tenantName, String tenantPhone) {
@@ -122,7 +114,7 @@ public class AddRoomActivity extends AppCompatActivity {
         } catch (NumberFormatException e) {
             showToast("Giá phòng phải là số"); return false;
         }
-        
+
         if (isRented) {
             if (TextUtils.isEmpty(tenantName)) {
                 showToast("Vui lòng nhập tên người thuê"); return false;

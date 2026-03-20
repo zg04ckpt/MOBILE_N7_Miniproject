@@ -3,7 +3,7 @@ package com.hoangcn.n7.models;
 import java.io.Serializable;
 
 public class Room implements Serializable {
-    private String id;
+    private int id;
     private String name;
     private double price;
     private String status;
@@ -11,7 +11,7 @@ public class Room implements Serializable {
     private String tenantPhone;
     private int previewImage;
 
-    public Room(String id, String name, double price, String status, String tenantName, String tenantPhone, int previewImage) {
+    public Room(int id, String name, double price, String status, String tenantName, String tenantPhone, int previewImage) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -21,11 +21,11 @@ public class Room implements Serializable {
         this.previewImage = previewImage;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 

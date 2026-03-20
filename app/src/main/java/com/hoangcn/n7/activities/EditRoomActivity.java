@@ -11,6 +11,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.hoangcn.n7.R;
+import com.hoangcn.n7.managers.RoomManager;
 import com.hoangcn.n7.models.Room;
 import com.hoangcn.n7.utils.RoomValidator;
 
@@ -125,6 +126,11 @@ public class EditRoomActivity extends AppCompatActivity {
         currentRoom.setTenantPhone(phone);
         if (selectedImageResId != -1) {
             currentRoom.setPreviewImage(selectedImageResId);
+        }
+
+        // update singleton master list if possible
+        if (roomPosition >= 0) {
+            RoomManager.getInstance().updateRoom(roomPosition, currentRoom);
         }
 
         getIntent().putExtra("updatedRoom", currentRoom);

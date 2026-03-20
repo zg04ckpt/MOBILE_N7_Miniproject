@@ -5,19 +5,14 @@
     android:layout_height="match_parent"
     android:background="#F5F5F5">
 
-    <com.google.android.material.appbar.AppBarLayout
+    <!-- Toolbar directly under CoordinatorLayout (no Material AppBarLayout) -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/primary"
-            app:title="Thêm Phòng Mới"
-            app:titleTextColor="@color/white" />
-
-    </com.google.android.material.appbar.AppBarLayout>
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/primary"
+        app:title="Thêm Phòng Mới"
+        app:titleTextColor="@color/white" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -28,136 +23,163 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="20dp">
+            android:padding="20dp"
+            android:background="@drawable/card_bg">
 
-            <com.google.android.material.card.MaterialCardView
+            <!-- Use a simple container instead of MaterialCardView -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="2dp"
-                app:strokeWidth="0dp">
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:elevation="2dp">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:layout_marginBottom="16dp">
+
+                    <ImageView
+                        android:id="@+id/ivRoomImage"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:src="@android:drawable/ic_menu_gallery"
+                        android:background="#E0E0E0"
+                        android:contentDescription="@string/hint_room_name" />
+
+                    <!-- Use ImageButton instead of FloatingActionButton -->
+                    <ImageButton
+                        android:id="@+id/btnSelectImage"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_gravity="bottom|end"
+                        android:layout_margin="12dp"
+                        android:src="@android:drawable/ic_menu_camera"
+                        android:backgroundTint="@color/primary"
+                        app:tint="@color/white"
+                        android:contentDescription="@string/hint_room_name" />
+                </FrameLayout>
+
+                <!-- Simple EditText fields instead of TextInputLayout/TextInputEditText -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/hint_room_name"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="6dp" />
+
+                <EditText
+                    android:id="@+id/etRoomName"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:hint="@string/hint_room_name"
+                    android:inputType="textCapWords"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:background="@drawable/input_bg"
+                    android:layout_marginBottom="12dp"
+                    android:importantForAutofill="no" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/hint_price"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="6dp" />
+
+                <EditText
+                    android:id="@+id/etPrice"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:hint="@string/hint_price"
+                    android:inputType="number"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:background="@drawable/input_bg"
+                    android:layout_marginBottom="12dp"
+                    android:importantForAutofill="no" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_status_title"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="6dp" />
+
+                <Spinner
+                    android:id="@+id/spnStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:entries="@array/status_filter_options"
+                    android:layout_marginBottom="12dp" />
 
                 <LinearLayout
+                    android:id="@+id/layoutTenantInfo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:visibility="gone">
 
-                    <FrameLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="200dp"
-                        android:layout_marginBottom="16dp">
-
-                        <ImageView
-                            android:id="@+id/ivRoomImage"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:scaleType="centerCrop"
-                            android:src="@android:drawable/ic_menu_gallery"
-                            android:background="#E0E0E0" />
-
-                        <com.google.android.material.floatingactionbutton.FloatingActionButton
-                            android:id="@+id/btnSelectImage"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="bottom|end"
-                            android:layout_margin="12dp"
-                            android:src="@android:drawable/ic_menu_camera"
-                            app:fabSize="mini"
-                            app:tint="@color/white"
-                            app:backgroundTint="@color/primary" />
-                    </FrameLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="12dp"
-                        android:hint="Tên phòng"
-                        app:startIconDrawable="@android:drawable/ic_menu_info_details">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etRoomName"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:inputType="textCapWords" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="12dp"
-                        android:hint="Giá phòng (VNĐ)"
-                        app:startIconDrawable="@android:drawable/ic_menu_send">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etPrice"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:inputType="number" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/cbIsRented"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="12dp"
-                        android:text="Trạng thái đã thuê"
-                        android:textSize="16sp" />
-
-                    <LinearLayout
-                        android:id="@+id/layoutTenantInfo"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:visibility="gone">
-
-                        <com.google.android.material.textfield.TextInputLayout
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="12dp"
-                            android:hint="Tên người thuê"
-                            app:startIconDrawable="@android:drawable/ic_menu_myplaces">
-
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/etTenantName"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:inputType="textPersonName" />
-                        </com.google.android.material.textfield.TextInputLayout>
-
-                        <com.google.android.material.textfield.TextInputLayout
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="12dp"
-                            android:hint="Số điện thoại"
-                            app:startIconDrawable="@android:drawable/ic_menu_call">
-
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/etTenantPhone"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:inputType="phone"
-                                android:maxLength="11" />
-                        </com.google.android.material.textfield.TextInputLayout>
-                    </LinearLayout>
-
-                    <Button
-                        android:id="@+id/btnSave"
-                        android:layout_width="match_parent"
-                        android:layout_height="56dp"
-                        android:layout_marginTop="16dp"
-                        android:text="LƯU THÔNG TIN"
-                        android:textSize="16sp"
+                        android:text="@string/hint_tenant_name"
+                        android:textSize="14sp"
                         android:textStyle="bold"
-                        app:cornerRadius="12dp" />
+                        android:layout_marginBottom="6dp" />
 
+                    <EditText
+                        android:id="@+id/etTenantName"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:hint="@string/hint_tenant_name"
+                        android:inputType="textPersonName"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp"
+                        android:background="@drawable/input_bg"
+                        android:layout_marginBottom="12dp"
+                        android:importantForAutofill="no" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/hint_phone"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="6dp" />
+
+                    <EditText
+                        android:id="@+id/etTenantPhone"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:hint="@string/hint_phone"
+                        android:inputType="phone"
+                        android:maxLength="11"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp"
+                        android:background="@drawable/input_bg"
+                        android:layout_marginBottom="12dp"
+                        android:importantForAutofill="no" />
                 </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+
+                <Button
+                    android:id="@+id/btnSave"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/btn_save_room"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
