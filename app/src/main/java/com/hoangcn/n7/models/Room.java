@@ -6,20 +6,19 @@ public class Room implements Serializable {
     private String id;
     private String name;
     private double price;
-    private boolean isRented;
+    private String status;
     private String tenantName;
     private String tenantPhone;
+    private int previewImage;
 
-    public Room() {
-    }
-
-    public Room(String id, String name, double price, boolean isRented, String tenantName, String tenantPhone) {
+    public Room(String id, String name, double price, String status, String tenantName, String tenantPhone, int previewImage) {
         this.id = id;
         this.name = name;
         this.price = price;
-        this.isRented = isRented;
+        this.status = status;
         this.tenantName = tenantName;
         this.tenantPhone = tenantPhone;
+        this.previewImage = previewImage;
     }
 
     public String getId() {
@@ -46,12 +45,12 @@ public class Room implements Serializable {
         this.price = price;
     }
 
-    public boolean isRented() {
-        return isRented;
+    public String getStatus() {
+        return status;
     }
 
-    public void setRented(boolean rented) {
-        isRented = rented;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public String getTenantName() {
@@ -68,5 +67,13 @@ public class Room implements Serializable {
 
     public void setTenantPhone(String tenantPhone) {
         this.tenantPhone = tenantPhone;
+    }
+
+    public int getPreviewImage() {
+        return previewImage;
+    }
+
+    public void setPreviewImage(int previewImage) {
+        this.previewImage = previewImage;
     }
 }

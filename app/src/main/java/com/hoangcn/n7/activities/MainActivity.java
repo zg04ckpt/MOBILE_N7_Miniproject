@@ -49,10 +49,6 @@ public class MainActivity extends AppCompatActivity implements RoomAdapter.OnRoo
     private void initData() {
         // Dữ liệu mẫu
         roomList = new ArrayList<>();
-        roomList.add(new Room("1", "Phòng 101", 2500000, false, "", ""));
-        roomList.add(new Room("2", "Phòng 102", 3000000, true, "Nguyễn Văn A", "0987654321"));
-        roomList.add(new Room("3", "Phòng 201", 2800000, false, "", ""));
-        roomList.add(new Room("4", "Phòng 202", 3500000, true, "Trần Thị B", "0123456789"));
     }
 
     private void setupRecyclerView() {
@@ -63,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements RoomAdapter.OnRoo
 
     @Override
     public void onEdit(Room room, int position) {
-        Intent intent = new Intent(this, TestActivity.class);
+        Intent intent = new Intent(this, EditRoomActivity.class);
         intent.putExtra("room", room);
         startActivityForResult(intent, UPDATE_REQUEST_CODE);
     }
