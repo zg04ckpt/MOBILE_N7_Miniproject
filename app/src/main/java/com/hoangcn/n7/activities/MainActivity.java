@@ -1,8 +1,10 @@
 package com.hoangcn.n7.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -17,11 +19,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements RoomAdapter.OnRoomActionListener {
-
     private RecyclerView rvRooms;
     private RoomAdapter adapter;
     private List<Room> roomList;
     private FloatingActionButton fabAdd;
+    private final int UPDATE_REQUEST_CODE = 1;
+    private final int ADD_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,8 +63,33 @@ public class MainActivity extends AppCompatActivity implements RoomAdapter.OnRoo
 
     @Override
     public void onEdit(Room room, int position) {
-        // Placeholder for Edit functionality
-        Toast.makeText(this, "Sửa: " + room.getName(), Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this, TestActivity.class);
+        intent.putExtra("room", room);
+        startActivityForResult(intent, UPDATE_REQUEST_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Room room = (Room) data.getSerializableExtra("room");
+
+        // Update the room in the list
+        if (requestCode == UPDATE_REQUEST_CODE && resultCode == RESULT_OK) {
+            for (int i = 0; i < roomList.size(); i++) {
+                if (roomList.get(i).getId().equals(room.getId())) {
+                    roomList.set(i, room);
+                }
+                adapter.notifyItemChanged(roomList.indexOf(room));
+                return;
+            }
+        }
+
+        // Add the new room
+        if (requestCode == ADD_REQUEST_CODE && resultCode == RESULT_OK) {
+            roomList.add(room);
+            adapter.notifyItemInserted(roomList.size() - 1);
+            return;
+        }
     }
 
     @Override
