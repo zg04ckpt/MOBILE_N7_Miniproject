@@ -1,0 +1,37 @@
+<resources>
+    <string name="app_name">n7</string>
+    <string name="toolbar_title">Quản Lý Phòng Trọ</string>
+    <string name="hint_search">Tìm theo tên phòng</string>
+    <string name="label_status">Tình trạng:</string>
+    <string name="status_available">Còn trống</string>
+    <string name="status_rented">Đã thuê</string>
+    <string name="status_all">Tất cả</string>
+    <string name="hint_min_price">Giá min</string>
+    <string name="hint_max_price">Giá max</string>
+    <string name="action_reset">Tìm kiếm</string>
+    <string name="tenant_empty">Chưa có người thuê</string>
+
+    <string name="hint_room_name">Tên phòng</string>
+    <string name="hint_price">Giá phòng (VNĐ)</string>
+    <string name="label_status_title">Tình trạng</string>
+    <string name="hint_tenant_name">Tên người thuê</string>
+    <string name="hint_phone">Số điện thoại</string>
+    <string name="btn_save_room">LƯU THÔNG TIN</string>
+
+    <!-- formatting strings -->
+    <string name="price_format">%1$s VND</string>
+    <string name="tenant_with_phone">%1$s - %2$s</string>
+
+    <string-array name="status_filter_options">
+        <item>@string/status_available</item>
+        <item>@string/status_rented</item>
+        <item>@string/status_all</item>
+    </string-array>
+
+    <!-- alias for other layouts that reference status_array -->
+    <string-array name="status_array">
+        <item>@string/status_available</item>
+        <item>@string/status_rented</item>
+        <item>@string/status_all</item>
+    </string-array>
+</resources>
